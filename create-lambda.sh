@@ -16,8 +16,12 @@
 # $ATHENA_OUTPUT_LOCATION	Name of the S3 bucket for Athena output
 #
 
+# Create lambda zip files from .py file
+bash ../create-lambda-zips.sh
+
 # Load the Lambda functions for each Intent
 echo "Lambda execution role = $LAMBDA_ROLE_ARN"
+echo "Starting lambda function creation"
 for i in $INTENTS
 do
     module_name=`echo $i | tr '[:upper:]' '[:lower:]'`
@@ -36,7 +40,7 @@ do
         --function-name ${LAMBDA}_${i} \
         --description "${LAMBDA} ${i} Intent Handler" \
         --timeout 300 \
-        --zip-file fileb://${i}.zip \
+        --zip-file fileb://../${i}.zip \
         --role $LAMBDA_ROLE_ARN \
         --handler ${module_name}.lambda_handler \
         --runtime python3.6 \
@@ -60,3 +64,4 @@ do
     echo; echo; echo
 done
 
+echo "finished lambda function creation"
